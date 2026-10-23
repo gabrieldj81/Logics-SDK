@@ -3,9 +3,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CakeLogicSDK {
+namespace CakeLogicSDK.V3D {
 [DisallowMultipleComponent]
-[AddComponentMenu("Cake Logic/Logic's SDK/func_train")]
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_train")]
 public class func_train : MonoBehaviour
 {
     //"GET IN THE FUNC_TRAIN!!!" -Logic's Mod Guide

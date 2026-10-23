@@ -1,9 +1,9 @@
 //Created by: Cake Logic
 using UnityEngine;
 
-namespace CakeLogicSDK.VR {
+namespace CakeLogicSDK.V3D {
 [DisallowMultipleComponent]
-[AddComponentMenu("Cake Logic/Logic's VR SDK/func_presence")]
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_presence")]
 public class func_presence : MonoBehaviour
 {
     public func_presencedetection TempObject = null;

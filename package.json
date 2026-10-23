@@ -1,12 +1,14 @@
 {
   "name": "com.cakelogic.cakelogicsdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Logic's SDK",
   "description": "A simple and ready to use SDK for helping make game development in Unity a lot less of a hassle",
   "unity": "6000.3",
   "author": {
     "name": "Cake Logic",
-    "url": "https://sites.google.com/view/cakelogic"
+    "url": "https://github.com/gabrieldj81/Logics-SDK/"
   },
-  "dependencies": {}
+  "dependencies": {
+    "com.unity.inputsystem": "1.18.0"
+  }
 }

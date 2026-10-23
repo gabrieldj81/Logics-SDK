@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CakeLogicSDK.VR {
-[AddComponentMenu("Cake Logic/Logic's VR SDK/func_presencedetection")]
+namespace CakeLogicSDK.V3D {
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_presencedetection")]
 public class func_presencedetection : MonoBehaviour
 {
     [Tooltip("Specify whether or not to utilize the hold feature of the presence detector")] [SerializeField] private bool useHold;

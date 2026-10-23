@@ -3,9 +3,9 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CakeLogicSDK {
+namespace CakeLogicSDK.V3D {
 [DisallowMultipleComponent]
-[AddComponentMenu("Cake Logic/Logic's SDK/func_trigger")]
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_trigger")]
 public class func_trigger : MonoBehaviour
 {
     public bool useStay = false;

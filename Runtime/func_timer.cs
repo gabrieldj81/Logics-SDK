@@ -9,7 +9,7 @@ public class func_timer : MonoBehaviour
 {
     [SerializeField] private float timeRemaining = 60;
     [SerializeField] private bool timerIsRunning = false;
-    [SerializeField] private UnityEvent OnTimerEnd;
+    public UnityEvent OnTimerEnd;
     void Update()
     {
         if (timerIsRunning)

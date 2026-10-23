@@ -3,8 +3,8 @@ using System;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace CakeLogicSDK {
-[AddComponentMenu("Cake Logic/Logic's SDK/func_collidertrigger")]
+namespace CakeLogicSDK.V3D {
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_collidertrigger")]
 public class func_collidertrigger : MonoBehaviour
 {
     [SerializeField] private UnityEvent OnEnter;

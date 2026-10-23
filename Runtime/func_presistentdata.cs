@@ -30,8 +30,7 @@ public class func_presistentdata : MonoBehaviour
       }
       if(keys.Length == 0 || keys == null)
       {
-       Array.Resize(ref keys, 1);
-       Array.Resize(ref datas, 1);
+       ResizeArrays(1);
       }
       if(FindItemByName(key) != -1)
       {
@@ -48,8 +47,7 @@ public class func_presistentdata : MonoBehaviour
          return;
         }
       }
-      Array.Resize(ref keys, keys.Length + 1);
-      Array.Resize(ref datas, datas.Length + 1);
+      ResizeArrays(keys.Length + 1);
       keys[keys.Length - 1] = key;
       datas[keys.Length - 1] = data;
     }
@@ -148,9 +146,13 @@ public class func_presistentdata : MonoBehaviour
           }
         }
       }
-      Array.Resize(ref keys, keys.Length - x);
-      Array.Resize(ref datas, datas.Length - x);
+      ResizeArrays(keys.Length - x);
       return;
+    }
+    private void ResizeArrays(int Length)
+    {
+      Array.Resize(ref keys, Length);
+      Array.Resize(ref datas, Length);
     }
   }
 }

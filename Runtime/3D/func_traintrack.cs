@@ -2,8 +2,8 @@
 using System;
 using UnityEngine;
 
-namespace CakeLogicSDK {
-[AddComponentMenu("Cake Logic/Logic's SDK/func_traintrack")]
+namespace CakeLogicSDK.V3D {
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_traintrack")]
 public class func_traintrack : MonoBehaviour
 {
     public func_traintrack nextTrainTrack;

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace CakeLogicSDK {
-[AddComponentMenu("Cake Logic/Logic's SDK/func_gun")]
+namespace CakeLogicSDK.V3D {
+[AddComponentMenu("Cake Logic/Logic's SDK/3D/func_gun")]
 public class func_gun : MonoBehaviour
 {
   [SerializeField] private Transform playerCamera;
@@ -50,21 +50,45 @@ public class func_gun : MonoBehaviour
    {
     if(lineRenderer != null)
     {
-      lineRenderer.startWidth = 0.01f;
-      lineRenderer.endWidth = 0.01f;
+      lineRenderer.startWidth = 0.02f;
+      lineRenderer.endWidth = 0.02f;
       lineRenderer.positionCount = 2;
     }
    }
+    void OnEnable()
+    {
+        if(bulletTravelTimer != null)
+        {
+          bulletTravelTimer.OnTimerEnd.AddListener(SetLineVisibility);
+        }
+        if(fireRateTimer != null)
+        {
+          fireRateTimer.OnTimerEnd.AddListener(SetFireAbility);
+        }
+    }
+
+    void OnDisable()
+    {
+        if(bulletTravelTimer != null)
+        {
+          bulletTravelTimer.OnTimerEnd.RemoveListener(SetLineVisibility);
+        }
+        if(fireRateTimer != null)
+        {
+          fireRateTimer.OnTimerEnd.RemoveListener(SetFireAbility);
+        }
+    }
 
    void Update()
    {
-      cameraDirection = playerCamera.TransformDirection(Vector3.forward);
       UpdateRaycast();
       UpdateInput();
+      UpdateVisuals();
    }
 
    void UpdateRaycast()
    {
+    cameraDirection = playerCamera.TransformDirection(Vector3.forward);
       RaycastHit hit;
          if (Physics.Raycast(playerCamera.position, cameraDirection, out hit, Mathf.Infinity, layerMask))
            {
@@ -140,7 +164,7 @@ public class func_gun : MonoBehaviour
            }
    }
 
-   void FixedUpdate()
+   void UpdateVisuals()
    {
       barrelDirection = barrelEndPoint.TransformDirection(Vector3.forward);
       if(lineRenderer != null)
@@ -166,7 +190,7 @@ public class func_gun : MonoBehaviour
 
    void Shoot()
    {
-     if(canFire)
+     if(canFire && !holdFire)
      {
      //Version of shooting that does not hit anything
      if(gunShootSFX != null)
@@ -187,6 +211,26 @@ public class func_gun : MonoBehaviour
      fireRateTimer.SetTimer(fireRate);
      fireRateTimer.StartTimer(true);
      canFire = false;
+     }
+     if(animator != null)
+     {
+     animator.SetTrigger("Fire");
+     }
+     Debug.Log("Hit Nothing.");
+     }
+     if(canFire && holdFire)
+     {
+      //Version of shooting that does not hit anything
+     if(gunShootSFX != null)
+     {
+      if(!gunShootSFX.isPlaying)
+      {
+        gunShootSFX.Play();
+      }
+     }
+     if(lineRenderer != null)
+     {
+     lineRenderer.enabled = true;
      }
      if(animator != null)
      {
@@ -271,6 +315,14 @@ public class func_gun : MonoBehaviour
     public void SetFireAbility(bool set)
     {
       canFire = set;
+    }
+    public void SetFireAbility()
+    {
+      canFire = true;
+    }
+    public void SetLineVisibility()
+    {
+      lineRenderer.enabled = false;
     }
     public void StopHoldingFire()
     {
