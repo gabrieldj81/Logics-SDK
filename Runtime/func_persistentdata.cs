@@ -5,8 +5,8 @@ using System.Linq;
 
 namespace CakeLogicSDK {
 [DisallowMultipleComponent]
-[AddComponentMenu("Cake Logic/Logic's SDK/func_presistentdata")]
-public class func_presistentdata : MonoBehaviour
+[AddComponentMenu("Cake Logic/Logic's SDK/func_persistentdata")]
+public class func_persistentdata : MonoBehaviour
 {
     //This script utilizes array indexing alongside two arrays to easily store and retrieve data
 

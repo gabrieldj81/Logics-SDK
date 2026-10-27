@@ -11,7 +11,7 @@ public class func_datacheck : MonoBehaviour
     [SerializeField] private string data;
     [SerializeField] private UnityEvent IfDataMatches;
     [SerializeField] private UnityEvent IfDataDoesNotMatch;
-    private func_presistentdata dataManager;
+    private func_persistentdata dataManager;
 
     void Start()
     {
