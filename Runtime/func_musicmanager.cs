@@ -52,6 +52,23 @@ public class func_musicmanager : MonoBehaviour
   }
   public void SwitchTrackWithFade(string input, bool playAfterSwitch)
   {
+<<<<<<< HEAD
+<<<<<<< HEAD
+    if(musicPlayer.isPlaying)
+    {
+      StartCoroutine(FadeVolAlt(0.5f, 0, true, false, playAfterSwitch, input));
+    }
+    else
+    {
+      SetTrack(input);
+      if(playAfterSwitch)
+      {
+        StartMusic(true);
+      }
+    }
+=======
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
    try
    {
     if(musicPlayer.isPlaying)
@@ -69,6 +86,10 @@ public class func_musicmanager : MonoBehaviour
    {
     throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
    }
+<<<<<<< HEAD
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
   }
   public void SwitchTrack(string input, bool playAfterSwitch)
   {
@@ -101,28 +122,72 @@ public class func_musicmanager : MonoBehaviour
     musicPlayer.Play();
     if(fade)
     {
+<<<<<<< HEAD
+<<<<<<< HEAD
+      StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+    }
+    if(!fade)
+    {
+     musicPlayer.volume = volumeMemory;
+=======
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
       StartCoroutine(FadeVol(0.5f, volumeMemory));
     }
     else
     {
      musicPlayer.volume = 1f;
+<<<<<<< HEAD
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
     }
   }
   public void StopMusic(bool fade)
   {
     if(fade)
     {
+<<<<<<< HEAD
+<<<<<<< HEAD
+      StartCoroutine(FadeVol(0.5f, 0, true, false));
+    }
+    if(!fade)
+    {
+      musicPlayer.Stop();
+    }
+=======
       StartCoroutine(FadeVol(0.5f, 0));
     }
     musicPlayer.Stop();
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+      StartCoroutine(FadeVol(0.5f, 0));
+    }
+    musicPlayer.Stop();
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
   }
   public void PauseMusic(bool fade)
   {
     if(fade)
     {
+<<<<<<< HEAD
+<<<<<<< HEAD
+      StartCoroutine(FadeVol(0.5f, 0, false, true));
+    }
+    if(!fade)
+    {
+      musicPlayer.Pause();
+    }
+=======
       StartCoroutine(FadeVol(0.5f, 0));
     }
     musicPlayer.Pause();
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+      StartCoroutine(FadeVol(0.5f, 0));
+    }
+    musicPlayer.Pause();
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
   }
   public void UnPauseMusic(bool fade)
   {
@@ -130,7 +195,15 @@ public class func_musicmanager : MonoBehaviour
     musicPlayer.UnPause();
     if(fade)
     {
+<<<<<<< HEAD
+<<<<<<< HEAD
+      StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+=======
       StartCoroutine(FadeVol(0.5f, volumeMemory));
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+      StartCoroutine(FadeVol(0.5f, volumeMemory));
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
     }
     else
     {
@@ -149,6 +222,20 @@ public class func_musicmanager : MonoBehaviour
     }
     return 1;
   }
+<<<<<<< HEAD
+<<<<<<< HEAD
+  private IEnumerator FadeVol(float speed, float input, bool stopMusicManual, bool pauseMusicManual)
+  {
+    bool stopExecution = false;
+    float newVolume = NormalizeFloat(input);
+    if(newVolume == musicPlayer.volume)
+    {
+     stopExecution = true;
+    }
+    if(newVolume > musicPlayer.volume && !stopExecution)
+=======
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
   private IEnumerator FadeVol(float speed, float input)
   {
     float newVolume = NormalizeFloat(input);
@@ -157,24 +244,84 @@ public class func_musicmanager : MonoBehaviour
      yield return null;
     }
     if(newVolume > musicPlayer.volume)
+<<<<<<< HEAD
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
     {
         while(musicPlayer.volume < newVolume)
         {
           musicPlayer.volume += Time.deltaTime * speed;
+<<<<<<< HEAD
+<<<<<<< HEAD
+          yield return null;
+        }
+        musicPlayer.volume = newVolume;
+        stopExecution = true;
+    }
+    if(newVolume < musicPlayer.volume && !stopExecution)
+=======
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
         }
         musicPlayer.volume = newVolume;
         volumeMemory = newVolume;
         yield return null;
     }
     if(newVolume < musicPlayer.volume)
+<<<<<<< HEAD
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
     {
         while(musicPlayer.volume > newVolume)
         {
           musicPlayer.volume -= Time.deltaTime * speed;
+<<<<<<< HEAD
+<<<<<<< HEAD
+          yield return null;
+        }
+        musicPlayer.volume = newVolume;
+    }
+    if(stopMusicManual)
+    {
+      musicPlayer.Stop();
+    }
+    if(pauseMusicManual)
+    {
+      musicPlayer.Pause();
+    }
+  }
+  private IEnumerator FadeVolAlt(float speed, float input, bool stopMusicManual, bool pauseMusicManual, bool playAfterSwitch, string newTrack)
+  {
+    yield return StartCoroutine(FadeVol(speed, input, stopMusicManual, pauseMusicManual));
+    SetTrackAndPlay(playAfterSwitch, newTrack);
+  }
+  private void SetTrackAndPlay(bool playAfterSwitch, string newTrack)
+  {
+    try
+    {
+    musicPlayer.clip = Resources.Load<AudioClip>("Music/" + newTrack);
+    currentMusic = "Music/" + newTrack;
+    if(playAfterSwitch)
+    {
+      StartMusic(true);
+    }
+    }
+    catch
+    {
+      throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
+=======
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
         }
         musicPlayer.volume = newVolume;
         volumeMemory = newVolume;
         yield return null;
+<<<<<<< HEAD
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
+=======
+>>>>>>> 2bd13ba94316402adad6308981968d89557da00c
     }
   }
 }
