@@ -10,6 +10,9 @@ public class func_musicmanager : MonoBehaviour
 {
     [SerializeField] private string currentMusic; //Set this to the path of the music where it is located in the "Resources" folder
     [SerializeField] private bool playOnAwake;
+    private Coroutine currentCoroutine;
+    private Coroutine altCoroutine;
+    private bool isRunningAlt = false;
     private AudioSource musicPlayer;
     private float volumeMemory = 1f;
     void Awake()
@@ -52,9 +55,11 @@ public class func_musicmanager : MonoBehaviour
   }
   public void SwitchTrackWithFade(string input, bool playAfterSwitch)
   {
+    StopCurrentCoroutine();
     if(musicPlayer.isPlaying)
     {
-      StartCoroutine(FadeVolAlt(0.5f, 0, true, false, playAfterSwitch, input));
+      isRunningAlt = true;
+      currentCoroutine = StartCoroutine(FadeVolAlt(0.5f, 0, true, false, playAfterSwitch, input));
     }
     else
     {
@@ -73,8 +78,8 @@ public class func_musicmanager : MonoBehaviour
     {
      StopMusic(false);
     }
-    musicPlayer.clip = Resources.Load<AudioClip>("Music/" + input);
     currentMusic = "Music/" + input;
+    musicPlayer.clip = Resources.Load<AudioClip>(currentMusic);
     if(playAfterSwitch)
     {
       StartMusic(false);
@@ -87,108 +92,80 @@ public class func_musicmanager : MonoBehaviour
   }
   public void SetVolume(float newVolume)
   {
-   musicPlayer.volume = NormalizeFloat(newVolume);
-   volumeMemory = NormalizeFloat(newVolume);
+   musicPlayer.volume = Mathf.Clamp01(newVolume);
+   volumeMemory = Mathf.Clamp01(newVolume);
   }
   public void StartMusic(bool fade)
   {
+    StopCurrentCoroutine();
     musicPlayer.volume = 0;
     musicPlayer.Play();
     if(fade)
     {
-      StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+      currentCoroutine = StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
     }
-    if(!fade)
+    else
     {
      musicPlayer.volume = volumeMemory;
     }
   }
   public void StopMusic(bool fade)
   {
+    StopCurrentCoroutine();
     if(fade)
     {
-      StartCoroutine(FadeVol(0.5f, 0, true, false));
+      currentCoroutine = StartCoroutine(FadeVol(0.5f, 0, true, false));
     }
-    if(!fade)
+    else
     {
       musicPlayer.Stop();
     }
   }
   public void PauseMusic(bool fade)
   {
+    StopCurrentCoroutine();
     if(fade)
     {
-      StartCoroutine(FadeVol(0.5f, 0, false, true));
+      currentCoroutine = StartCoroutine(FadeVol(0.5f, 0, false, true));
     }
-    if(!fade)
+    else
     {
       musicPlayer.Pause();
     }
   }
   public void UnPauseMusic(bool fade)
   {
+    StopCurrentCoroutine();
     musicPlayer.volume = 0;
     musicPlayer.UnPause();
     if(fade)
     {
-      StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+      currentCoroutine = StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
     }
     else
     {
      musicPlayer.volume = 1f;
     }
   }
-  private float NormalizeFloat(float value)
-  {
-    if(value <= 1f)
-    {
-      return value;
-    }
-    if(value > 1f)
-    {
-      return 1f;
-    }
-    return 1;
-  }
   private IEnumerator FadeVol(float speed, float input, bool stopMusicManual, bool pauseMusicManual)
   {
     bool stopExecution = false;
-    float newVolume = NormalizeFloat(input);
+    float newVolume = Mathf.Clamp01(input);
     if(newVolume == musicPlayer.volume)
     {
      stopExecution = true;
     }
-    if(newVolume > musicPlayer.volume && !stopExecution)
+    while (!Mathf.Approximately(musicPlayer.volume, targetVolume))
     {
-        while(musicPlayer.volume < newVolume)
-        {
-          musicPlayer.volume += Time.deltaTime * speed;
-          yield return null;
-        }
-        musicPlayer.volume = newVolume;
-        stopExecution = true;
+    musicPlayer.volume = Mathf.MoveTowards(musicPlayer.volume, input, speed);
     }
-    if(newVolume < musicPlayer.volume && !stopExecution)
-    {
-        while(musicPlayer.volume > newVolume)
-        {
-          musicPlayer.volume -= Time.deltaTime * speed;
-          yield return null;
-        }
-        musicPlayer.volume = newVolume;
-    }
-    if(stopMusicManual)
-    {
-      musicPlayer.Stop();
-    }
-    if(pauseMusicManual)
-    {
-      musicPlayer.Pause();
-    }
+    if (stopMusicManual) musicPlayer.Stop();
+    if (pauseMusicManual) musicPlayer.Pause();
   }
   private IEnumerator FadeVolAlt(float speed, float input, bool stopMusicManual, bool pauseMusicManual, bool playAfterSwitch, string newTrack)
   {
-    yield return StartCoroutine(FadeVol(speed, input, stopMusicManual, pauseMusicManual));
+    altCoroutine = StartCoroutine(FadeVol(speed, input, stopMusicManual, pauseMusicManual));
+    yield return altCoroutine;
     SetTrackAndPlay(playAfterSwitch, newTrack);
   }
   private void SetTrackAndPlay(bool playAfterSwitch, string newTrack)
@@ -204,7 +181,22 @@ public class func_musicmanager : MonoBehaviour
     }
     catch
     {
+      isRunningAlt = false;
       throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
+    }
+    isRunningAlt = false;
+  }
+  private void StopCurrentCoroutine()
+  {
+    if(isRunningAlt)
+    {
+      StopCoroutine(altCoroutine);
+      altCoroutine = null;
+    }
+    if (currentCoroutine != null)
+    {
+      StopCoroutine(currentCoroutine);
+      currentCoroutine = null;
     }
   }
 }
