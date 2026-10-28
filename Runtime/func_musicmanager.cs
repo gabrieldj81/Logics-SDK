@@ -140,7 +140,7 @@ public class func_musicmanager : MonoBehaviour
     musicPlayer.UnPause();
     if(fade)
     {
-      currentCoroutine = StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+      currentCoroutine = StartCoroutine(FadeVol(0.05f, volumeMemory, false, false));
     }
     else
     {
@@ -150,14 +150,29 @@ public class func_musicmanager : MonoBehaviour
   private IEnumerator FadeVol(float speed, float input, bool stopMusicManual, bool pauseMusicManual)
   {
     float newVolume = Mathf.Clamp01(input);
+    bool StopExecution = false;
     if(newVolume == musicPlayer.volume)
     {
      yield break;
     }
-    while (!Mathf.Approximately(musicPlayer.volume, input))
+    if(newVolume > musicPlayer.volume)
     {
-    musicPlayer.volume = Mathf.MoveTowards(musicPlayer.volume, input, speed);
-    yield return null;
+        while(musicPlayer.volume < newVolume)
+        {
+          musicPlayer.volume += Time.deltaTime * speed;
+          yield return null;
+        }
+        musicPlayer.volume = newVolume;
+        StopExecution = true;
+    }
+    if(newVolume < musicPlayer.volume && !StopExecution)
+    {
+        while(musicPlayer.volume > newVolume)
+        {
+          musicPlayer.volume -= Time.deltaTime * speed;
+          yield return null;
+        }
+        musicPlayer.volume = newVolume;
     }
     if (stopMusicManual) musicPlayer.Stop();
     if (pauseMusicManual) musicPlayer.Pause();
