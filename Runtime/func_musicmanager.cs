@@ -149,15 +149,15 @@ public class func_musicmanager : MonoBehaviour
   }
   private IEnumerator FadeVol(float speed, float input, bool stopMusicManual, bool pauseMusicManual)
   {
-    bool stopExecution = false;
     float newVolume = Mathf.Clamp01(input);
     if(newVolume == musicPlayer.volume)
     {
-     stopExecution = true;
+     yield break;
     }
-    while (!Mathf.Approximately(musicPlayer.volume, targetVolume))
+    while (!Mathf.Approximately(musicPlayer.volume, input))
     {
     musicPlayer.volume = Mathf.MoveTowards(musicPlayer.volume, input, speed);
+    yield return null;
     }
     if (stopMusicManual) musicPlayer.Stop();
     if (pauseMusicManual) musicPlayer.Pause();
