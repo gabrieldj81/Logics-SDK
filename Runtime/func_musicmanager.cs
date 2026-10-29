@@ -4,49 +4,35 @@ using System.Collections;
 using UnityEngine;
 
 namespace CakeLogicSDK {
+[RequireComponent(typeof(AudioSource))]
 [DisallowMultipleComponent]
 [AddComponentMenu("Cake Logic/Logic's SDK/func_musicmanager")]
 public class func_musicmanager : MonoBehaviour
 {
-    [SerializeField] private string currentMusic; //Set this to the path of the music where it is located in the "Resources" folder
+    [SerializeField] private string currentMusic;
+    public float fadeSpeed = 0.5f;
     [SerializeField] private bool playOnAwake;
-    private Coroutine currentCoroutine;
-    private Coroutine altCoroutine;
-    private bool isRunningAlt = false;
     private AudioSource musicPlayer;
     private float volumeMemory = 1f;
+    private Coroutine currentCoroutine;
+    private Coroutine altCoroutine;
     void Awake()
     {
-        if(musicPlayer == null)
-        {
-            musicPlayer = gameObject.GetComponent<AudioSource>();
-            if(musicPlayer == null)
-            {
-              gameObject.AddComponent<AudioSource>();   
-              musicPlayer = gameObject.GetComponent<AudioSource>();       
-            }
-            musicPlayer.loop = true;
-            musicPlayer.playOnAwake = false;
-            if(playOnAwake)
-            {
-              SetTrack(currentMusic);
-              StartMusic(false);
-            }
-        }
+      musicPlayer = gameObject.GetComponent<AudioSource>();
+      musicPlayer.loop = true;
+      musicPlayer.playOnAwake = false;
+      if(playOnAwake)
+      {
+        SetTrack(currentMusic);
+        StartMusic(false);
+      }
     }
   public void SetTrack(string input)
   {
    if(!musicPlayer.isPlaying)
    {
-   try
-   {
     musicPlayer.clip = Resources.Load<AudioClip>("Music/" + input);
-    currentMusic = input;
-   }
-   catch
-   {
-    throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
-   }
+    currentMusic = "Music/" + input;
    }
    else
    {
@@ -55,11 +41,10 @@ public class func_musicmanager : MonoBehaviour
   }
   public void SwitchTrackWithFade(string input, bool playAfterSwitch)
   {
-    StopCurrentCoroutine();
+    StopConcurrentCoroutines();
     if(musicPlayer.isPlaying)
     {
-      isRunningAlt = true;
-      currentCoroutine = StartCoroutine(FadeVolAlt(0.5f, 0, true, false, playAfterSwitch, input));
+      currentCoroutine = StartCoroutine(FadeVolAlt(fadeSpeed, 0, true, false, playAfterSwitch, input));
     }
     else
     {
@@ -72,8 +57,6 @@ public class func_musicmanager : MonoBehaviour
   }
   public void SwitchTrack(string input, bool playAfterSwitch)
   {
-   try
-   {
     if(musicPlayer.isPlaying)
     {
      StopMusic(false);
@@ -84,11 +67,6 @@ public class func_musicmanager : MonoBehaviour
     {
       StartMusic(false);
     }
-   }
-   catch
-   {
-    throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
-   }
   }
   public void SetVolume(float newVolume)
   {
@@ -97,12 +75,12 @@ public class func_musicmanager : MonoBehaviour
   }
   public void StartMusic(bool fade)
   {
-    StopCurrentCoroutine();
+    StopConcurrentCoroutines();
     musicPlayer.volume = 0;
     musicPlayer.Play();
     if(fade)
     {
-      currentCoroutine = StartCoroutine(FadeVol(0.5f, volumeMemory, false, false));
+      currentCoroutine = StartCoroutine(FadeVol(fadeSpeed, volumeMemory, false, false));
     }
     else
     {
@@ -111,10 +89,10 @@ public class func_musicmanager : MonoBehaviour
   }
   public void StopMusic(bool fade)
   {
-    StopCurrentCoroutine();
+    StopConcurrentCoroutines();
     if(fade)
     {
-      currentCoroutine = StartCoroutine(FadeVol(0.5f, 0, true, false));
+      currentCoroutine = StartCoroutine(FadeVol(fadeSpeed, 0, true, false));
     }
     else
     {
@@ -123,10 +101,10 @@ public class func_musicmanager : MonoBehaviour
   }
   public void PauseMusic(bool fade)
   {
-    StopCurrentCoroutine();
+    StopConcurrentCoroutines();
     if(fade)
     {
-      currentCoroutine = StartCoroutine(FadeVol(0.5f, 0, false, true));
+      currentCoroutine = StartCoroutine(FadeVol(fadeSpeed, 0, false, true));
     }
     else
     {
@@ -135,23 +113,22 @@ public class func_musicmanager : MonoBehaviour
   }
   public void UnPauseMusic(bool fade)
   {
-    StopCurrentCoroutine();
+    StopConcurrentCoroutines();
     musicPlayer.volume = 0;
     musicPlayer.UnPause();
     if(fade)
     {
-      currentCoroutine = StartCoroutine(FadeVol(0.05f, volumeMemory, false, false));
+      currentCoroutine = StartCoroutine(FadeVol(fadeSpeed, volumeMemory, false, false));
     }
     else
     {
-     musicPlayer.volume = 1f;
+     musicPlayer.volume = volumeMemory;
     }
   }
   private IEnumerator FadeVol(float speed, float input, bool stopMusicManual, bool pauseMusicManual)
   {
     float newVolume = Mathf.Clamp01(input);
-    bool StopExecution = false;
-    if(newVolume == musicPlayer.volume)
+    if(Mathf.Approximately(newVolume, musicPlayer.volume))
     {
      yield break;
     }
@@ -163,9 +140,8 @@ public class func_musicmanager : MonoBehaviour
           yield return null;
         }
         musicPlayer.volume = newVolume;
-        StopExecution = true;
     }
-    if(newVolume < musicPlayer.volume && !StopExecution)
+    if(newVolume < musicPlayer.volume)
     {
         while(musicPlayer.volume > newVolume)
         {
@@ -181,37 +157,21 @@ public class func_musicmanager : MonoBehaviour
   {
     altCoroutine = StartCoroutine(FadeVol(speed, input, stopMusicManual, pauseMusicManual));
     yield return altCoroutine;
-    SetTrackAndPlay(playAfterSwitch, newTrack);
-  }
-  private void SetTrackAndPlay(bool playAfterSwitch, string newTrack)
-  {
-    try
-    {
-    musicPlayer.clip = Resources.Load<AudioClip>("Music/" + newTrack);
-    currentMusic = "Music/" + newTrack;
+    SetTrack(newTrack);
     if(playAfterSwitch)
     {
       StartMusic(true);
     }
-    }
-    catch
-    {
-      isRunningAlt = false;
-      throw new ArgumentException("Failed to load track! Track is either invalid or does not exist!");
-    }
-    isRunningAlt = false;
   }
-  private void StopCurrentCoroutine()
+  private void StopConcurrentCoroutines()
   {
-    if(isRunningAlt)
-    {
-      StopCoroutine(altCoroutine);
-      altCoroutine = null;
-    }
-    if (currentCoroutine != null)
+    if(currentCoroutine != null)
     {
       StopCoroutine(currentCoroutine);
-      currentCoroutine = null;
+    }
+    if(altCoroutine != null)
+    {
+      StopCoroutine(altCoroutine);
     }
   }
 }
